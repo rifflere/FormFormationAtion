@@ -578,8 +578,8 @@ export default function App() {
         {/* ── Header ── */}
         <div className="header">
           <div className="header-left">
-            <h1>Form Builder</h1>
-            <p>Build form schemas and export as JSON</p>
+            <h1>Form Formation Ation</h1>
+            <p>Build form schemas with a live preview and export as JSON</p>
           </div>
           <div className="form-name-wrap">
             <label className="form-name-label">Form Name</label>
