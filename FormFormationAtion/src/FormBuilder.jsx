@@ -46,6 +46,12 @@ const defaultSection = () => ({
 const defaultItems = () => [
   {
     id: crypto.randomUUID(),
+    kind: "section",
+    title: "Contact Info",
+    description: "Please enter up-to-date contact information."
+  },
+  {
+    id: crypto.randomUUID(),
     kind: "question",
     label: "Name",
     helperText: "Enter your name here",
