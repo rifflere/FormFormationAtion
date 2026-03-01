@@ -15,6 +15,17 @@
   --border: #d8d8d8;
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --danger-border: #fca5a5;
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --section-color: #7c3aed;
+  --section-bg: #f5f3ff;
+  --section-border: #ddd6fe;
+  --content-color: #0891b2;
+  --content-bg: #f0f9ff;
+  --content-border: #bae6fd;
   --text: #1a1a1a;
   --muted: #6b7280;
   --hint: #9ca3af;
@@ -75,7 +86,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .right-panel {
@@ -107,6 +118,38 @@ body {
 }
 
 /* =====================
+   Drag-to-reorder
+   ===================== */
+
+.drag-item {
+  transition: opacity 0.15s;
+}
+
+.drag-item[draggable="true"] {
+  cursor: default;
+}
+
+.drag-item.drag-over {
+  opacity: 0.5;
+  outline: 2px dashed var(--accent);
+  border-radius: var(--radius);
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--hint);
+  font-size: 16px;
+  padding: 0 4px;
+  user-select: none;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* =====================
    Question Card
    ===================== */
 
@@ -114,7 +157,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 11px;
@@ -126,14 +169,57 @@ body {
 
 .qcard-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .qcard-num {
   font-weight: bold;
   font-size: 13px;
   color: var(--accent);
+  flex: 1;
+}
+
+/* =====================
+   Section Card
+   ===================== */
+
+.section-card {
+  border-color: var(--section-border) !important;
+  background: var(--section-bg) !important;
+}
+
+.section-card:hover {
+  border-color: var(--section-color) !important;
+}
+
+.section-badge {
+  flex: 1;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--section-color);
+}
+
+/* =====================
+   Content Block Card
+   ===================== */
+
+.content-card {
+  border-color: var(--content-border) !important;
+  background: var(--content-bg) !important;
+}
+
+.content-card:hover {
+  border-color: var(--content-color) !important;
+}
+
+.content-badge {
+  flex: 1;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: var(--content-color);
 }
 
 /* =====================
@@ -153,21 +239,30 @@ body {
   align-items: center;
   justify-content: center;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .remove-btn:hover {
-  border-color: #f87171;
-  color: #ef4444;
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+/* Add button group at bottom of builder */
+.add-btn-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .add-btn {
+  flex: 1;
   background: transparent;
   border: 1px dashed var(--border);
   border-radius: var(--radius);
   color: var(--muted);
   font-family: Arial, sans-serif;
-  font-size: 13px;
-  padding: 11px;
+  font-size: 12px;
+  padding: 10px 8px;
   cursor: pointer;
   text-align: center;
 }
@@ -175,6 +270,26 @@ body {
 .add-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.add-btn-content {
+  border-color: var(--content-border);
+  color: var(--content-color);
+}
+
+.add-btn-content:hover {
+  border-color: var(--content-color);
+  background: var(--content-bg);
+}
+
+.add-btn-section {
+  border-color: var(--section-border);
+  color: var(--section-color);
+}
+
+.add-btn-section:hover {
+  border-color: var(--section-color);
+  background: var(--section-bg);
 }
 
 .toggle {
@@ -235,6 +350,24 @@ body {
 .reset-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.submit-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.submit-btn:hover {
+  background: var(--accent-hover);
 }
 
 /* =====================
@@ -328,7 +461,6 @@ input:disabled {
   font-weight: bold;
 }
 
-/* ALL / ANY mode selector */
 .condition-mode {
   display: flex;
   align-items: center;
@@ -343,7 +475,6 @@ input:disabled {
   font-size: 11px;
 }
 
-/* Individual condition row */
 .condition-row {
   display: flex;
   align-items: center;
@@ -385,8 +516,8 @@ input:disabled {
 }
 
 .remove-condition-btn:hover {
-  border-color: #f87171;
-  color: #ef4444;
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
 .add-condition-btn {
@@ -453,7 +584,56 @@ input:disabled {
   gap: 4px;
 }
 
-/* Each question wrapper — hidden ones collapse smoothly */
+/* Section divider in preview */
+.preview-section {
+  padding: 14px 0 6px;
+  border-bottom: 2px solid var(--section-border);
+  margin-bottom: 4px;
+}
+
+.preview-section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--section-color);
+}
+
+.preview-section-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+/* Content block in preview */
+.preview-content {
+  background: var(--content-bg);
+  border: 1px solid var(--content-border);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview-content-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--content-color);
+}
+
+.preview-content-body {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.preview-content-img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* Question fields in preview */
 .preview-field {
   display: flex;
   flex-direction: column;
@@ -467,17 +647,22 @@ input:disabled {
 
 .preview-visible {
   opacity: 1;
-  max-height: 400px;
+  max-height: 500px;
   border-color: var(--border);
   background: var(--surface2);
 }
 
 .preview-hidden {
   opacity: 0.3;
-  max-height: 52px;       /* just enough for the label */
+  max-height: 52px;
   border-color: transparent;
   background: transparent;
   pointer-events: none;
+}
+
+.preview-field.has-error {
+  border-color: var(--danger-border) !important;
+  background: var(--danger-bg) !important;
 }
 
 .preview-label {
@@ -490,7 +675,7 @@ input:disabled {
 }
 
 .required-star {
-  color: #ef4444;
+  color: var(--danger);
   font-size: 14px;
   line-height: 1;
 }
@@ -498,6 +683,12 @@ input:disabled {
 .preview-helper {
   font-size: 11px;
   color: var(--muted);
+}
+
+.preview-error {
+  font-size: 11px;
+  color: var(--danger);
+  font-weight: bold;
 }
 
 .preview-options {
@@ -519,4 +710,127 @@ input:disabled {
 .preview-option input[type="checkbox"] {
   width: auto;
   accent-color: var(--accent);
+}
+
+/* =====================
+   Submit Success State
+   ===================== */
+
+.preview-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.success-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--success-bg);
+  border: 2px solid var(--success);
+  color: var(--success);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.success-msg {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--success);
+}
+
+/* =====================
+   Confirmation Modal
+   ===================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  max-width: 380px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.modal-icon {
+  font-size: 28px;
+  text-align: center;
+}
+
+.modal-message {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text);
+  text-align: center;
+}
+
+.modal-detail {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.modal-cancel {
+  flex: 1;
+  padding: 9px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.modal-cancel:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.modal-confirm {
+  flex: 1;
+  padding: 9px;
+  border-radius: 6px;
+  border: none;
+  background: var(--danger);
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-confirm:hover {
+  background: #dc2626;
 }
