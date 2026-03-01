@@ -57,12 +57,21 @@ body {
 
 .header {
   grid-column: 1 / -1;
-  padding: 20px 32px;
+  padding: 16px 32px;
   border-bottom: 1px solid var(--border);
   display: flex;
-  align-items: baseline;
-  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
   background: var(--surface);
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .header h1 {
@@ -74,6 +83,60 @@ body {
 .header p {
   color: var(--muted);
   font-size: 12px;
+}
+
+/* Form name field in header */
+.form-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 480px;
+}
+
+.form-name-label {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.form-name-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 7px 11px;
+  outline: none;
+  min-width: 0;
+}
+
+.form-name-input:focus {
+  border-color: var(--accent);
+}
+
+.form-name-input::placeholder {
+  font-weight: normal;
+  color: var(--hint);
+}
+
+.form-id-badge {
+  font-size: 10px;
+  color: var(--hint);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  font-family: monospace;
+  cursor: default;
+  flex-shrink: 0;
 }
 
 /* =====================
@@ -247,7 +310,6 @@ body {
   color: var(--danger);
 }
 
-/* Add button group at bottom of builder */
 .add-btn-group {
   display: flex;
   gap: 8px;
@@ -572,6 +634,16 @@ input:disabled {
   align-items: center;
 }
 
+/* Form title shown at top of preview */
+.preview-form-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 2px;
+}
+
 .preview-empty {
   color: var(--hint);
   font-size: 12px;
@@ -584,7 +656,6 @@ input:disabled {
   gap: 4px;
 }
 
-/* Section divider in preview */
 .preview-section {
   padding: 14px 0 6px;
   border-bottom: 2px solid var(--section-border);
@@ -603,7 +674,6 @@ input:disabled {
   margin-top: 3px;
 }
 
-/* Content block in preview */
 .preview-content {
   background: var(--content-bg);
   border: 1px solid var(--content-border);
@@ -633,7 +703,6 @@ input:disabled {
   margin-top: 4px;
 }
 
-/* Question fields in preview */
 .preview-field {
   display: flex;
   flex-direction: column;

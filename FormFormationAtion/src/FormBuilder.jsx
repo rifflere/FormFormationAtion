@@ -1,11 +1,9 @@
 import { useState, useRef } from "react";
-import "./App.css";
+import "./FormBuilder.css";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const INPUT_TYPES = ["text", "textarea", "number", "email", "select", "radio", "checkbox", "date"];
-
-// item.kind: "question" | "content" | "section"
 
 // ─── Factories ────────────────────────────────────────────────────────────────
 
@@ -42,6 +40,44 @@ const defaultSection = () => ({
   title: "New Section",
   description: "",
 });
+
+// ─── Default preloaded items ──────────────────────────────────────────────────
+
+const defaultItems = () => [
+  {
+    id: crypto.randomUUID(),
+    kind: "question",
+    label: "Name",
+    helperText: "Enter your name here",
+    required: true,
+    type: "text",
+    options: "",
+    conditions: [],
+    conditionMode: "all",
+  },
+  {
+    id: crypto.randomUUID(),
+    kind: "question",
+    label: "Email",
+    helperText: "Enter your email here",
+    required: true,
+    type: "email",
+    options: "",
+    conditions: [],
+    conditionMode: "all",
+  },
+  {
+    id: crypto.randomUUID(),
+    kind: "question",
+    label: "I agree to terms and conditions",
+    helperText: "",
+    required: true,
+    type: "radio",
+    options: "Yes, No",
+    conditions: [],
+    conditionMode: "all",
+  },
+];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -93,7 +129,6 @@ function evaluateConditions(item, answers, allItems) {
   return item.conditionMode === "all" ? results.every(Boolean) : results.some(Boolean);
 }
 
-// Only real question items before this index (for condition dropdowns)
 function precedingQuestions(items, index) {
   return items.slice(0, index).filter((i) => i.kind === "question");
 }
@@ -118,10 +153,7 @@ function useDragReorder(items, setItems) {
   const onDrop = (e, index) => {
     e.preventDefault();
     const from = dragIndex.current;
-    if (from === null || from === index) {
-      setDragOverIndex(null);
-      return;
-    }
+    if (from === null || from === index) { setDragOverIndex(null); return; }
     const next = [...items];
     const [moved] = next.splice(from, 1);
     next.splice(index, 0, moved);
@@ -130,15 +162,12 @@ function useDragReorder(items, setItems) {
     setDragOverIndex(null);
   };
 
-  const onDragEnd = () => {
-    dragIndex.current = null;
-    setDragOverIndex(null);
-  };
+  const onDragEnd = () => { dragIndex.current = null; setDragOverIndex(null); };
 
   return { onDragStart, onDragOver, onDrop, onDragEnd, dragOverIndex };
 }
 
-// ─── Confirmation Modal ────────────────────────────────────────────────────────
+// ─── Confirmation Modal ───────────────────────────────────────────────────────
 
 function ConfirmModal({ message, detail, onConfirm, onCancel }) {
   return (
@@ -163,27 +192,17 @@ function SectionCard({ item, onRemove, onChange, dragHandleProps }) {
   return (
     <div className="qcard section-card">
       <div className="qcard-header">
-        <div className="drag-handle" {...dragHandleProps} title="Drag to reorder">⠿</div>
+        <div className="drag-handle" {...dragHandleProps}>⠿</div>
         <span className="section-badge">SECTION</span>
         <button className="remove-btn" onClick={onRemove} title="Remove section">×</button>
       </div>
       <div className="field-row">
         <label>Section Title</label>
-        <input
-          type="text"
-          placeholder="Section heading"
-          value={item.title}
-          onChange={(e) => update("title", e.target.value)}
-        />
+        <input type="text" placeholder="Section heading" value={item.title} onChange={(e) => update("title", e.target.value)} />
       </div>
       <div className="field-row">
         <label>Description <span className="hint">(optional)</span></label>
-        <input
-          type="text"
-          placeholder="Short description shown below the heading"
-          value={item.description}
-          onChange={(e) => update("description", e.target.value)}
-        />
+        <input type="text" placeholder="Short description shown below the heading" value={item.description} onChange={(e) => update("description", e.target.value)} />
       </div>
     </div>
   );
@@ -196,36 +215,21 @@ function ContentCard({ item, onRemove, onChange, dragHandleProps }) {
   return (
     <div className="qcard content-card">
       <div className="qcard-header">
-        <div className="drag-handle" {...dragHandleProps} title="Drag to reorder">⠿</div>
+        <div className="drag-handle" {...dragHandleProps}>⠿</div>
         <span className="content-badge">CONTENT</span>
         <button className="remove-btn" onClick={onRemove} title="Remove block">×</button>
       </div>
       <div className="field-row">
         <label>Title <span className="hint">(optional)</span></label>
-        <input
-          type="text"
-          placeholder="Block title"
-          value={item.title}
-          onChange={(e) => update("title", e.target.value)}
-        />
+        <input type="text" placeholder="Block title" value={item.title} onChange={(e) => update("title", e.target.value)} />
       </div>
       <div className="field-row">
         <label>Body Text <span className="hint">(optional)</span></label>
-        <textarea
-          rows={3}
-          placeholder="Informational text, instructions, etc."
-          value={item.body}
-          onChange={(e) => update("body", e.target.value)}
-        />
+        <textarea rows={3} placeholder="Informational text, instructions, etc." value={item.body} onChange={(e) => update("body", e.target.value)} />
       </div>
       <div className="field-row">
         <label>Image URL <span className="hint">(optional)</span></label>
-        <input
-          type="text"
-          placeholder="https://example.com/image.png"
-          value={item.imageUrl}
-          onChange={(e) => update("imageUrl", e.target.value)}
-        />
+        <input type="text" placeholder="https://example.com/image.png" value={item.imageUrl} onChange={(e) => update("imageUrl", e.target.value)} />
       </div>
     </div>
   );
@@ -243,35 +247,23 @@ function QuestionCard({ item, index, allItems, onChange, onRemove, dragHandlePro
   const updateCondition = (id, field, value) =>
     update("conditions", item.conditions.map((c) => (c.id === id ? { ...c, [field]: value } : c)));
 
-  // Question number = count of question-kind items up to this point
   const qNum = allItems.slice(0, index).filter((i) => i.kind === "question").length + 1;
 
   return (
     <div className="qcard">
       <div className="qcard-header">
-        <div className="drag-handle" {...dragHandleProps} title="Drag to reorder">⠿</div>
+        <div className="drag-handle" {...dragHandleProps}>⠿</div>
         <span className="qcard-num">Q{qNum}</span>
         <button className="remove-btn" onClick={onRemove} title="Remove question">×</button>
       </div>
 
       <div className="field-row">
         <label>Label</label>
-        <input
-          type="text"
-          placeholder="Question label"
-          value={item.label}
-          onChange={(e) => update("label", e.target.value)}
-        />
+        <input type="text" placeholder="Question label" value={item.label} onChange={(e) => update("label", e.target.value)} />
       </div>
-
       <div className="field-row">
         <label>Helper Text</label>
-        <input
-          type="text"
-          placeholder="Optional description"
-          value={item.helperText}
-          onChange={(e) => update("helperText", e.target.value)}
-        />
+        <input type="text" placeholder="Optional description" value={item.helperText} onChange={(e) => update("helperText", e.target.value)} />
       </div>
 
       <div className="field-row two-col">
@@ -283,10 +275,7 @@ function QuestionCard({ item, index, allItems, onChange, onRemove, dragHandlePro
         </div>
         <div className="required-toggle">
           <label>Required</label>
-          <button
-            className={`toggle ${item.required ? "on" : "off"}`}
-            onClick={() => update("required", !item.required)}
-          >
+          <button className={`toggle ${item.required ? "on" : "off"}`} onClick={() => update("required", !item.required)}>
             {item.required ? "Yes" : "No"}
           </button>
         </div>
@@ -295,12 +284,7 @@ function QuestionCard({ item, index, allItems, onChange, onRemove, dragHandlePro
       {needsOptions && (
         <div className="field-row">
           <label>Options <span className="hint">(comma-separated)</span></label>
-          <input
-            type="text"
-            placeholder="Option A, Option B, Option C"
-            value={item.options}
-            onChange={(e) => update("options", e.target.value)}
-          />
+          <input type="text" placeholder="Option A, Option B, Option C" value={item.options} onChange={(e) => update("options", e.target.value)} />
         </div>
       )}
 
@@ -319,42 +303,26 @@ function QuestionCard({ item, index, allItems, onChange, onRemove, dragHandlePro
               </div>
             )}
           </div>
-
           {item.conditions.map((cond, ci) => (
             <div key={cond.id} className="condition-row">
               <span className="condition-index">{ci + 1}</span>
-              <select
-                value={cond.questionId}
-                onChange={(e) => updateCondition(cond.id, "questionId", e.target.value)}
-              >
+              <select value={cond.questionId} onChange={(e) => updateCondition(cond.id, "questionId", e.target.value)}>
                 <option value="">— question —</option>
                 {preceding.map((q, i) => (
-                  <option key={q.id} value={q.id}>
-                    Q{i + 1}: {q.label || "(unlabeled)"}
-                  </option>
+                  <option key={q.id} value={q.id}>Q{i + 1}: {q.label || "(unlabeled)"}</option>
                 ))}
               </select>
-              <select
-                value={cond.operator}
-                onChange={(e) => updateCondition(cond.id, "operator", e.target.value)}
-              >
+              <select value={cond.operator} onChange={(e) => updateCondition(cond.id, "operator", e.target.value)}>
                 <option value="is">is</option>
                 <option value="is_not">is not</option>
                 <option value="is_empty">is empty</option>
               </select>
               {cond.operator !== "is_empty" && (
-                <input
-                  type="text"
-                  placeholder="answer"
-                  value={cond.answer}
-                  disabled={!cond.questionId}
-                  onChange={(e) => updateCondition(cond.id, "answer", e.target.value)}
-                />
+                <input type="text" placeholder="answer" value={cond.answer} disabled={!cond.questionId} onChange={(e) => updateCondition(cond.id, "answer", e.target.value)} />
               )}
               <button className="remove-condition-btn" onClick={() => removeCondition(cond.id)} title="Remove condition">×</button>
             </div>
           ))}
-
           <button className="add-condition-btn" onClick={addCondition}>+ Add Condition</button>
         </div>
       )}
@@ -364,7 +332,7 @@ function QuestionCard({ item, index, allItems, onChange, onRemove, dragHandlePro
 
 // ─── Live Form Preview ────────────────────────────────────────────────────────
 
-function FormPreview({ items }) {
+function FormPreview({ formName, items }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
@@ -414,13 +382,14 @@ function FormPreview({ items }) {
         <button className="reset-btn" onClick={resetForm}>Reset</button>
       </div>
 
+      {formName && <div className="preview-form-title">{formName}</div>}
+
       {items.length === 0 ? (
         <p className="preview-empty">No items yet.</p>
       ) : (
         <>
           <div className="preview-form">
             {items.map((item) => {
-              // ── Section ──
               if (item.kind === "section") {
                 return (
                   <div key={item.id} className="preview-section">
@@ -429,49 +398,33 @@ function FormPreview({ items }) {
                   </div>
                 );
               }
-
-              // ── Content block ──
               if (item.kind === "content") {
                 return (
                   <div key={item.id} className="preview-content">
                     {item.title && <div className="preview-content-title">{item.title}</div>}
                     {item.body && <div className="preview-content-body">{item.body}</div>}
                     {item.imageUrl && (
-                      <img
-                        className="preview-content-img"
-                        src={item.imageUrl}
-                        alt={item.title || "Content image"}
-                        onError={(e) => { e.target.style.display = "none"; }}
-                      />
+                      <img className="preview-content-img" src={item.imageUrl} alt={item.title || "Content image"} onError={(e) => { e.target.style.display = "none"; }} />
                     )}
                   </div>
                 );
               }
 
-              // ── Question ──
               const visible = evaluateConditions(item, answers, items);
-              const opts = item.options
-                ? item.options.split(",").map((s) => s.trim()).filter(Boolean)
-                : [];
+              const opts = item.options ? item.options.split(",").map((s) => s.trim()).filter(Boolean) : [];
               const hasError = errors[item.id];
 
               return (
-                <div
-                  key={item.id}
-                  className={`preview-field ${visible ? "preview-visible" : "preview-hidden"} ${hasError ? "has-error" : ""}`}
-                >
+                <div key={item.id} className={`preview-field ${visible ? "preview-visible" : "preview-hidden"} ${hasError ? "has-error" : ""}`}>
                   <label className="preview-label">
                     {item.label || <em>Unlabeled question</em>}
                     {item.required && <span className="required-star">*</span>}
                   </label>
                   {item.helperText && <span className="preview-helper">{item.helperText}</span>}
                   {hasError && <span className="preview-error">This field is required.</span>}
-
                   {visible && (
                     <>
-                      {item.type === "textarea" && (
-                        <textarea rows={3} value={answers[item.id] ?? ""} onChange={(e) => setAnswer(item.id, e.target.value)} />
-                      )}
+                      {item.type === "textarea" && <textarea rows={3} value={answers[item.id] ?? ""} onChange={(e) => setAnswer(item.id, e.target.value)} />}
                       {["text", "email", "number", "date"].includes(item.type) && (
                         <input type={item.type} value={answers[item.id] ?? ""} onChange={(e) => setAnswer(item.id, e.target.value)} />
                       )}
@@ -507,7 +460,6 @@ function FormPreview({ items }) {
               );
             })}
           </div>
-
           <button className="submit-btn" onClick={handleSubmit}>Submit</button>
         </>
       )}
@@ -517,41 +469,48 @@ function FormPreview({ items }) {
 
 // ─── JSON serialiser ──────────────────────────────────────────────────────────
 
-function toJSON(items) {
-  return items.map((item) => {
-    if (item.kind === "section") {
-      return { id: item.id, kind: "section", title: item.title, ...(item.description && { description: item.description }) };
-    }
-    if (item.kind === "content") {
-      return {
-        id: item.id,
-        kind: "content",
-        ...(item.title && { title: item.title }),
-        ...(item.body && { body: item.body }),
-        ...(item.imageUrl && { imageUrl: item.imageUrl }),
-      };
-    }
-    // question
-    const obj = { id: item.id, kind: "question", label: item.label, type: item.type, required: item.required };
-    if (item.helperText) obj.helperText = item.helperText;
-    if (["select", "radio", "checkbox"].includes(item.type) && item.options) {
-      obj.options = item.options.split(",").map((s) => s.trim()).filter(Boolean);
-    }
-    const activeConditions = item.conditions.filter((c) => c.questionId);
-    if (activeConditions.length > 0) {
-      obj.conditions = activeConditions.map(({ questionId, operator, answer }) => ({
-        questionId, operator, ...(operator !== "is_empty" && { answer }),
-      }));
-      obj.conditionMode = item.conditionMode;
-    }
-    return obj;
-  });
+function toJSON(formId, formName, items) {
+  return {
+    formId,
+    formName: formName || "Untitled Form",
+    fields: items.map((item) => {
+      if (item.kind === "section") {
+        return { id: item.id, kind: "section", title: item.title, ...(item.description && { description: item.description }) };
+      }
+      if (item.kind === "content") {
+        return {
+          id: item.id,
+          kind: "content",
+          ...(item.title && { title: item.title }),
+          ...(item.body && { body: item.body }),
+          ...(item.imageUrl && { imageUrl: item.imageUrl }),
+        };
+      }
+      const obj = { id: item.id, kind: "question", label: item.label, type: item.type, required: item.required };
+      if (item.helperText) obj.helperText = item.helperText;
+      if (["select", "radio", "checkbox"].includes(item.type) && item.options) {
+        obj.options = item.options.split(",").map((s) => s.trim()).filter(Boolean);
+      }
+      const activeConditions = item.conditions.filter((c) => c.questionId);
+      if (activeConditions.length > 0) {
+        obj.conditions = activeConditions.map(({ questionId, operator, answer }) => ({
+          questionId, operator, ...(operator !== "is_empty" && { answer }),
+        }));
+        obj.conditionMode = item.conditionMode;
+      }
+      return obj;
+    }),
+  };
 }
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [items, setItems] = useState([defaultQuestion()]);
+  // Stable form ID generated once
+  const formId = useRef(crypto.randomUUID()).current;
+
+  const [formName, setFormName] = useState("");
+  const [items, setItems] = useState(defaultItems());
   const [copied, setCopied] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
 
@@ -590,7 +549,7 @@ export default function App() {
   const updateItem = (id, updated) =>
     setItems((prev) => prev.map((x) => (x.id === id ? updated : x)));
 
-  const jsonOutput = JSON.stringify(toJSON(items), null, 2);
+  const jsonOutput = JSON.stringify(toJSON(formId, formName, items), null, 2);
 
   const copyJSON = () => {
     navigator.clipboard.writeText(jsonOutput);
@@ -610,9 +569,23 @@ export default function App() {
       )}
 
       <div className="app">
+        {/* ── Header ── */}
         <div className="header">
-          <h1>Form Builder</h1>
-          <p>Build form schemas and export as JSON</p>
+          <div className="header-left">
+            <h1>Form Builder</h1>
+            <p>Build form schemas and export as JSON</p>
+          </div>
+          <div className="form-name-wrap">
+            <label className="form-name-label">Form Name</label>
+            <input
+              className="form-name-input"
+              type="text"
+              placeholder="Untitled Form"
+              value={formName}
+              onChange={(e) => setFormName(e.target.value)}
+            />
+            <span className="form-id-badge" title="Form ID (auto-generated)">ID: {formId.slice(0, 8)}…</span>
+          </div>
         </div>
 
         {/* ── Builder panel ── */}
@@ -623,48 +596,22 @@ export default function App() {
             const dragProps = {
               draggable: true,
               onDragStart: (e) => drag.onDragStart(e, index),
-              onDragOver: (e) => drag.onDragOver(e, index),
-              onDrop: (e) => drag.onDrop(e, index),
-              onDragEnd: drag.onDragEnd,
+              onDragOver:  (e) => drag.onDragOver(e, index),
+              onDrop:      (e) => drag.onDrop(e, index),
+              onDragEnd:   drag.onDragEnd,
             };
-            const dragHandleProps = {
-              onMouseDown: () => {},
-            };
+            const dragHandleProps = { onMouseDown: () => {} };
             const wrapClass = `drag-item ${drag.dragOverIndex === index ? "drag-over" : ""}`;
 
             return (
               <div key={item.id} className={wrapClass} {...dragProps}>
-                {item.kind === "section" && (
-                  <SectionCard
-                    item={item}
-                    onRemove={() => requestRemove(item.id)}
-                    onChange={(updated) => updateItem(item.id, updated)}
-                    dragHandleProps={dragHandleProps}
-                  />
-                )}
-                {item.kind === "content" && (
-                  <ContentCard
-                    item={item}
-                    onRemove={() => requestRemove(item.id)}
-                    onChange={(updated) => updateItem(item.id, updated)}
-                    dragHandleProps={dragHandleProps}
-                  />
-                )}
-                {item.kind === "question" && (
-                  <QuestionCard
-                    item={item}
-                    index={index}
-                    allItems={items}
-                    onChange={(updated) => updateItem(item.id, updated)}
-                    onRemove={() => requestRemove(item.id)}
-                    dragHandleProps={dragHandleProps}
-                  />
-                )}
+                {item.kind === "section"  && <SectionCard  item={item} onRemove={() => requestRemove(item.id)} onChange={(u) => updateItem(item.id, u)} dragHandleProps={dragHandleProps} />}
+                {item.kind === "content"  && <ContentCard  item={item} onRemove={() => requestRemove(item.id)} onChange={(u) => updateItem(item.id, u)} dragHandleProps={dragHandleProps} />}
+                {item.kind === "question" && <QuestionCard item={item} index={index} allItems={items} onChange={(u) => updateItem(item.id, u)} onRemove={() => requestRemove(item.id)} dragHandleProps={dragHandleProps} />}
               </div>
             );
           })}
 
-          {/* Add buttons */}
           <div className="add-btn-group">
             <button className="add-btn" onClick={addQuestion}>+ Question</button>
             <button className="add-btn add-btn-content" onClick={addContent}>+ Content Block</button>
@@ -684,7 +631,7 @@ export default function App() {
         </div>
 
         {/* ── Preview panel ── */}
-        <FormPreview items={items} />
+        <FormPreview formName={formName} items={items} />
       </div>
     </>
   );
