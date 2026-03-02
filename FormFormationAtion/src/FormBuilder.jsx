@@ -512,13 +512,13 @@ function toJSON(formId, formName, items) {
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  // Stable form ID generated once
   const formId = useRef(crypto.randomUUID()).current;
 
   const [formName, setFormName] = useState("");
   const [items, setItems] = useState(defaultItems());
   const [copied, setCopied] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
+  const [activeTab, setActiveTab] = useState("builder"); // "builder" | "json" | "preview"
 
   const drag = useDragReorder(items, setItems);
 
@@ -575,11 +575,12 @@ export default function App() {
       )}
 
       <div className="app">
+
         {/* ── Header ── */}
         <div className="header">
           <div className="header-left">
             <h1>FormFormAtionAtion</h1>
-            <p>Build form schemas with a live preview and export as JSON</p>
+            <p className="header-subtitle">Build form schemas with a live preview and export as JSON</p>
           </div>
           <div className="form-name-wrap">
             <label className="form-name-label">Form Name</label>
@@ -594,8 +595,15 @@ export default function App() {
           </div>
         </div>
 
+        {/* ── Mobile tab bar ── */}
+        <div className="mobile-tabs">
+          <button className={`mobile-tab ${activeTab === "builder" ? "active" : ""}`} onClick={() => setActiveTab("builder")}>Builder</button>
+          <button className={`mobile-tab ${activeTab === "json"    ? "active" : ""}`} onClick={() => setActiveTab("json")}>JSON</button>
+          <button className={`mobile-tab ${activeTab === "preview" ? "active" : ""}`} onClick={() => setActiveTab("preview")}>Preview</button>
+        </div>
+
         {/* ── Builder panel ── */}
-        <div className="left-panel">
+        <div className={`left-panel ${activeTab !== "builder" ? "panel-hidden" : ""}`}>
           <div className="panel-title">Items</div>
 
           {items.map((item, index) => {
@@ -626,7 +634,7 @@ export default function App() {
         </div>
 
         {/* ── JSON panel ── */}
-        <div className="right-panel">
+        <div className={`right-panel ${activeTab !== "json" ? "panel-hidden" : ""}`}>
           <div className="panel-title json-header">
             <span>JSON Output</span>
             <button className={`copy-btn ${copied ? "copied" : ""}`} onClick={copyJSON}>
@@ -637,7 +645,10 @@ export default function App() {
         </div>
 
         {/* ── Preview panel ── */}
-        <FormPreview formName={formName} items={items} />
+        <div className={activeTab !== "preview" ? "panel-hidden" : ""}>
+          <FormPreview formName={formName} items={items} />
+        </div>
+
       </div>
     </>
   );

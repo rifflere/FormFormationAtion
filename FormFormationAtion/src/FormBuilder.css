@@ -41,14 +41,24 @@ body {
 }
 
 /* =====================
-   App Layout — 3 columns
+   App Layout — desktop: 3 columns
    ===================== */
 
 .app {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   min-height: 100vh;
+}
+
+/* Mobile tab bar hidden on desktop */
+.mobile-tabs {
+  display: none;
+}
+
+/* panel-hidden has no effect on desktop */
+.panel-hidden {
+  /* no-op on desktop — overridden in media query */
 }
 
 /* =====================
@@ -85,7 +95,6 @@ body {
   font-size: 12px;
 }
 
-/* Form name field in header */
 .form-name-wrap {
   display: flex;
   align-items: center;
@@ -140,7 +149,7 @@ body {
 }
 
 /* =====================
-   Panels
+   Panels — desktop
    ===================== */
 
 .left-panel {
@@ -541,6 +550,7 @@ input:disabled {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .condition-index {
@@ -634,7 +644,6 @@ input:disabled {
   align-items: center;
 }
 
-/* Form title shown at top of preview */
 .preview-form-title {
   font-size: 20px;
   font-weight: bold;
@@ -902,4 +911,179 @@ input:disabled {
 
 .modal-confirm:hover {
   background: #dc2626;
+}
+
+/* =====================
+   Responsive — Mobile
+   ===================== */
+
+@media (max-width: 768px) {
+
+  /* Stack to single column */
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+
+  /* Header stacks vertically */
+  .header {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  /* Hide subtitle on very small screens to save space */
+  .header-subtitle {
+    display: none;
+  }
+
+  .form-name-wrap {
+    max-width: 100%;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .form-id-badge {
+    display: none; /* save space — ID is in the JSON */
+  }
+
+  /* Tab bar appears */
+  .mobile-tabs {
+    display: flex;
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    background: transparent;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .mobile-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .mobile-tab:hover:not(.active) {
+    color: var(--text);
+  }
+
+  /* Hide inactive panels on mobile */
+  .panel-hidden {
+    display: none !important;
+  }
+
+  /* Remove side borders on panels */
+  .left-panel,
+  .right-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-height: calc(100vh - 120px);
+  }
+
+  .preview-panel {
+    min-height: calc(100vh - 120px);
+  }
+
+  /* Panels fill the full column */
+  .left-panel,
+  .right-panel,
+  .preview-panel {
+    padding: 18px 16px;
+  }
+
+  /* Condition rows wrap on narrow screens */
+  .condition-row {
+    flex-wrap: wrap;
+  }
+
+  /* Add button group stacks on very small screens */
+  .add-btn-group {
+    flex-direction: column;
+  }
+
+  /* Submit button full width on mobile */
+  .submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Modal fits small screens */
+  .modal {
+    padding: 22px 20px;
+  }
+}
+
+/* Tablet — 2 column layout, tab bar shown, all 3 panels switchable */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .app {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
+
+  .mobile-tabs {
+    display: flex;
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mobile-tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .mobile-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .mobile-tab:hover:not(.active) {
+    color: var(--text);
+  }
+
+  /* Active panel spans both columns on tablet */
+  .left-panel:not(.panel-hidden),
+  .right-panel:not(.panel-hidden),
+  .preview-panel {
+    grid-column: 1 / -1;
+  }
+
+  .panel-hidden {
+    display: none !important;
+  }
+
+  .left-panel,
+  .right-panel {
+    border-right: none;
+  }
 }
